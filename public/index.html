@@ -1,19 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Chat App</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Friend Code Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #f0f0f0;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+    }
+    button, input, textarea {
+      font-size: 1rem;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #myCode {
+      background: #e0e0e0;
+      padding: 0.5rem;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 2px;
+      user-select: all;
+    }
+    #chat, #friendChat {
+      height: 200px;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    #friendChat {
+      background: #fffbea;
+    }
+    .message {
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.3rem;
+    }
+    .fromMe {
+      color: green;
+    }
+    .fromFriend {
+      color: blue;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 1rem;
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <div id="chat-container">
-    <ul id="messages"></ul>
-    <form id="chat-form">
-      <input id="msg" autocomplete="off" placeholder="Type a message..." />
-      <button>Send</button>
-    </form>
-  </div>
+  <h1>Friend Code Chat</h1>
+
+  <button id="generateBtn">Create Friend Code (One-time use)</button>
+  <div>Your friend code:</div>
+  <div id="myCode">Not generated yet</div>
+
+  <label for="friendCodeInput">Enter Friend Code to chat with:</label>
+  <input id="friendCodeInput" placeholder="Friend's code" />
+
+  <label for="friendMessageInput">Message to friend:</label>
+  <textarea id="friendMessageInput" rows="3" placeholder="Type your message"></textarea>
+  <button id="sendFriendMsgBtn">Send Message</button>
+
+  <h3>Messages from friend:</h3>
+  <div id="friendChat"></div>
+
   <script src="/socket.io/socket.io.js"></script>
-  <script src="script.js"></script>
+  <script>
+    const socket = io();
+
+    const generateBtn = document.getElementById('generateBtn');
+    const myCodeDisplay = document.getElementById('myCode');
+    const friendCodeInput = document.getElementById('friendCodeInput');
+    const friendMessageInput = document.getElementById('friendMessageInput');
+    const sendFriendMsgBtn = document.getElementById('sendFriendMsgBtn');
+    const friendChat = document.getElementById('friendChat');
+
+    let myCode = null;
+
+    generateBtn.onclick = () => {
+      socket.emit('generateCode');
+      generateBtn.disabled = true;
+      generateBtn.innerText = 'Generating...';
+    };
+
+    socket.on('codeGenerated', (code) => {
+      myCode = code;
+      myCodeDisplay.innerText = code.toUpperCase();
+      generateBtn.innerText = 'Friend Code Generated!';
+    });
+
+    sendFriendMsgBtn.onclick = () => {
+      const toCode = friendCodeInput.value.trim().toLowerCase();
+      const message = friendMessageInput.value.trim();
+      if (!toCode) {
+        alert('Please enter a friend code.');
+        return;
+      }
+      if (!message) {
+        alert('Please enter a message.');
+        return;
+      }
+      socket.emit('sendMessage', { toCode, message });
+      addMessage(friendChat, `You: ${message}`, 'fromMe');
+      friendMessageInput.value = '';
+    };
+
+    socket.on('receiveMessage', ({ fromCode, message }) => {
+      addMessage(friendChat, `${fromCode === myCode ? 'You' : fromCode.toUpperCase()}: ${message}`, 'fromFriend');
+    });
+
+    function addMessage(container, text, className) {
+      const div = document.createElement('div');
+      div.className = `message ${className}`;
+      div.textContent = text;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+  </script>
 </body>
 </html>
