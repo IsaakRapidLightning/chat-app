@@ -1,20 +1,45 @@
 const socket = io();
 
-const form = document.getElementById('chat-form');
-const input = document.getElementById('msg');
-const messages = document.getElementById('messages');
+const generateBtn = document.getElementById('generateBtn');
+const myCodeDisplay = document.getElementById('myCode');
+const friendCodeInput = document.getElementById('friendCodeInput');
+const friendMessageInput = document.getElementById('friendMessageInput');
+const sendFriendMsgBtn = document.getElementById('sendFriendMsgBtn');
+const friendChat = document.getElementById('friendChat');
 
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  if (input.value) {
-    socket.emit('chat message', input.value);
-    input.value = '';
-  }
+let myCode = null;
+
+generateBtn.onclick = () => {
+  socket.emit('generateCode');
+  generateBtn.disabled = true;
+  generateBtn.textContent = 'Generating...';
+};
+
+socket.on('codeGenerated', (code) => {
+  myCode = code;
+  myCodeDisplay.textContent = code.toUpperCase();
+  generateBtn.textContent = 'Friend Code Generated!';
 });
 
-socket.on('chat message', (msg) => {
-  const li = document.createElement('li');
-  li.textContent = msg;
-  messages.appendChild(li);
-  messages.scrollTop = messages.scrollHeight;
+sendFriendMsgBtn.onclick = () => {
+  const toCode = friendCodeInput.value.trim().toLowerCase();
+  const message = friendMessageInput.value.trim();
+  if (!toCode || !message) return alert("Please fill in both fields.");
+  socket.emit('sendMessage', { toCode, message });
+  addMessage(`You: ${message}`, 'self');
+  friendMessageInput.value = '';
+};
+
+socket.on('receiveMessage', ({ fromCode, message }) => {
+  const label = fromCode === myCode ? 'You' : fromCode.toUpperCase();
+  addMessage(`${label}: ${message}`, 'friend');
 });
+
+function addMessage(text, type) {
+  const div = document.createElement('div');
+  div.className = 'message';
+  if (type === 'self') div.classList.add('self');
+  div.textContent = text;
+  friendChat.appendChild(div);
+  friendChat.scrollTop = friendChat.scrollHeight;
+}
