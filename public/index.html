@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8" />
 <link rel="stylesheet" href="/style.css">
-
+  <div class="container">
+    <h1>Chat App</h1>
+    <div class="friend-code-display">Your Code: <span id="code">123ABC</span></div>
+    <input type="text" id="friendCodeInput" placeholder="Enter friend's code" />
+    <textarea id="messageInput" placeholder="Type a message..."></textarea>
+    <button onclick="sendMessage()">Send</button>
+    <div class="messages" id="messages"></div>
+  </div>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Friend Code Chat</title>
   <style>
