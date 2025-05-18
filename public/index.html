@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>No jews allowed</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Friend Code Chat</h1>
+
+    <button id="generateBtn">Create Friend Code (One-time use)</button>
+    <div class="friend-code-box">Your Friend Code: <span id="myCode">Not generated yet</span></div>
+
+    <input type="text" id="friendCodeInput" placeholder="Enter friend’s code" />
+    <textarea id="friendMessageInput" placeholder="Type a message..."></textarea>
+    <button id="sendFriendMsgBtn">Send Message</button>
+
+    <h2>Messages from Friend</h2>
+    <div class="messages" id="friendChat"></div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"> // this is a comment</script>
+  <script src="/script.js"></script>
+</body>
+</html>
