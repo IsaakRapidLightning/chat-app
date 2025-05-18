@@ -3,15 +3,7 @@
 <head>
   <meta charset="UTF-8" />
 <link rel="stylesheet" href="/style.css">
-  <div class="container">
-    <h1>Chat App</h1>
-    <div class="friend-code-display">Your Code: <span id="code">123ABC</span></div>
-    <input type="text" id="friendCodeInput" placeholder="Enter friend's code" />
-    <textarea id="messageInput" placeholder="Type a message..."></textarea>
-    <button onclick="sendMessage()">Send</button>
-    <div class="messages" id="messages"></div>
-  </div>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Friend Code Chat</title>
   <style>
     body {
@@ -68,6 +60,26 @@
       display: block;
     }
   </style>
+<div class="container">
+    <h1>Friend Code Chat</h1>
+
+    <button onclick="generateCode()">Create Friend Code (One-time use)</button>
+    
+    <div class="friend-code-box" id="yourCodeBox">
+      Your friend code: <span id="yourCode">Not generated yet</span>
+    </div>
+
+    <input type="text" id="friendCodeInput" placeholder="Enter Friend Code to chat with" />
+    
+    <textarea id="messageInput" placeholder="Message to friend..."></textarea>
+    
+    <button onclick="sendMessage()">Send Message</button>
+
+    <div class="messages" id="messages">
+      <strong>Messages from friend:</strong>
+      <!-- Messages will appear here -->
+    </div>
+  </div>
 </head>
 <body>
   <h1>Friend Code Chat</h1>

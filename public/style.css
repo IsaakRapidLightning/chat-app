@@ -1,49 +1,66 @@
-/* Reset base styles */
+/* RESET */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Page background and layout */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f0f2f5;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
-/* Wrapper for the app */
+/* Main container */
 .container {
+  display: flex;
+  flex-direction: column;  /* Stack items vertically */
+  gap: 1rem;
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   background-color: white;
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* Headings */
-h1, h2 {
+h1 {
+  font-size: 1.8rem;
   text-align: center;
-  margin-bottom: 1rem;
   color: #333;
 }
 
-/* Inputs and buttons */
-input, button, textarea {
-  width: 100%;
+/* Friend code box */
+.friend-code-box {
+  background-color: #f1f3f5;
   padding: 0.75rem;
-  margin-bottom: 1rem;
   border-radius: 0.5rem;
-  border: 1px solid #ccc;
+  text-align: center;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+/* Inputs and buttons */
+input, textarea, button {
   font-size: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 button {
-  background-color: #4A90E2;
+  background-color: #4a90e2;
   color: white;
   border: none;
   cursor: pointer;
@@ -54,42 +71,12 @@ button:hover {
   background-color: #357ABD;
 }
 
-textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-/* Friend code box */
-.friend-code-display {
-  background-color: #f5f7fa;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  text-align: center;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 1rem;
-}
-
-/* Message area */
+/* Messages area */
 .messages {
-  background-color: #fdfdfd;
   border: 1px solid #ddd;
-  border-radius: 0.5rem;
-  max-height: 250px;
-  overflow-y: auto;
+  background-color: #fdfdfd;
   padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.message {
-  margin-bottom: 0.5rem;
-  padding: 0.5rem;
   border-radius: 0.5rem;
-  background-color: #e8f0fe;
-  color: #333;
-}
-
-.message.self {
-  background-color: #d1e7dd;
-  text-align: right;
+  max-height: 200px;
+  overflow-y: auto;
 }
