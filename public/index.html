@@ -2,28 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>No jews allowed</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>" />
-
-  <link rel="stylesheet" href="/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Friend Code Chat</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=" /> <!-- Blank favicon -->
 </head>
 <body>
   <div class="container">
-    <h1>Friend Code Chat</h1>
+    <h1>Friend Code Chat 💬</h1>
+    <div id="your-code" class="code">Your Code: ...</div>
 
-    <button id="generateBtn">Create Friend Code (One-time use)</button>
-    <div class="friend-code-box">Your Friend Code: <span id="myCode">Not generated yet</span></div>
+    <div class="chat-controls">
+      <input id="friend-code-input" placeholder="Enter Friend Code" />
+      <input id="message-input" placeholder="Type a message" />
+      <button id="send-btn">Send</button>
+    </div>
 
-    <input type="text" id="friendCodeInput" placeholder="Enter friend’s code" />
-    <textarea id="friendMessageInput" placeholder="Type a message..."></textarea>
-    <button id="sendFriendMsgBtn">Send Message</button>
+    <h2>Who's Online</h2>
+    <ul id="online-list"></ul>
 
-    <h2>Messages from Friend</h2>
-    <div class="messages" id="friendChat"></div>
+    <div id="messages" class="chat-box"></div>
   </div>
 
-  <script src="/socket.io/socket.io.js"> // this is a comment</script>
-  <script src="/script.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
