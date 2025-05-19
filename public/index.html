@@ -8,21 +8,23 @@
   <link rel="icon" href="data:;base64,iVBORw0KGgo=" /> <!-- Blank favicon -->
 </head>
 <body>
-  <div class="login-screen">
-    <h2>Enter a username</h2>
-    <input type="text" id="usernameInput" placeholder="e.g. CoolIsaak" />
-    <button id="joinBtn">Join Chat</button>
+  <div class="container">
+    <h1>Friend Code Chat 💬</h1>
+    <div id="your-code" class="code">Your Code: ...</div>
+
+    <div class="chat-controls">
+      <input id="friend-code-input" placeholder="Enter Friend Code" />
+      <input id="message-input" placeholder="Type a message" />
+      <button id="send-btn">Send</button>
+    </div>
+
+    <h2>Who's Online</h2>
+    <ul id="online-list"></ul>
+
+    <div id="messages" class="chat-box"></div>
   </div>
 
-  <div class="chat-screen hidden">
-    <div id="yourCodeDisplay"></div>
-    <div id="onlineUsersList"></div>
-    <div id="messages"></div>
-    <form id="messageForm">
-      <input type="text" id="recipientCode" placeholder="Friend Code" required />
-      <input type="text" id="messageInput" placeholder="Type a message" required />
-      <button type="submit">Send</button>
-    </form>
-  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

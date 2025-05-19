@@ -4,52 +4,41 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const path = require('path');
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
-const users = {}; // { socket.id: { code, username } }
-const codes = {}; // { code: socket.id }
+const users = {}; // socket.id -> friendCode
+const friendCodeMap = {}; // friendCode -> socket.id
 
-function generateCode() {
-  return Math.random().toString(36).substring(2, 8);
+function generateFriendCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
 io.on('connection', (socket) => {
-  let code = generateCode();
-  while (codes[code]) code = generateCode();
+  const friendCode = generateFriendCode();
+  users[socket.id] = friendCode;
+  friendCodeMap[friendCode] = socket.id;
 
-  socket.on('register', (username) => {
-    users[socket.id] = { code, username };
-    codes[code] = socket.id;
+  socket.emit('yourCode', friendCode);
+  io.emit('onlineUsers', Object.values(users));
 
-    socket.emit('registered', { code });
-
-    io.emit('onlineUsers', Object.fromEntries(
-      Object.values(users).map(u => [u.code, u.username])
-    ));
-  });
-
-  socket.on('sendMessage', ({ to, message }) => {
-    const toSocket = codes[to];
-    const fromUser = users[socket.id];
-    if (toSocket && fromUser) {
-      io.to(toSocket).emit('receiveMessage', {
-        from: fromUser.username || fromUser.code,
-        message
+  socket.on('sendMessage', ({ toCode, message }) => {
+    const targetSocketId = friendCodeMap[toCode];
+    if (targetSocketId) {
+      io.to(targetSocketId).emit('receiveMessage', {
+        from: users[socket.id],
+        message,
       });
     }
   });
 
   socket.on('disconnect', () => {
-    if (users[socket.id]) {
-      delete codes[users[socket.id].code];
-      delete users[socket.id];
-      io.emit('onlineUsers', Object.fromEntries(
-        Object.values(users).map(u => [u.code, u.username])
-      ));
-    }
+    const code = users[socket.id];
+    delete users[socket.id];
+    delete friendCodeMap[code];
+    io.emit('onlineUsers', Object.values(users));
   });
 });
 
-http.listen(process.env.PORT || 3000, () => {
-  console.log('Server running...');
+http.listen(3000, () => {
+  console.log('✅ Server running on http://localhost:3000');
 });
