@@ -1,6 +1,8 @@
 const socket = io();
 let myUsername = '';
 let currentChat = null;
+let messageHistory = JSON.parse(localStorage.getItem('chatHistory')) || {};
+let notifications = {};
 
 function showPrompt() {
   document.getElementById('username-prompt').classList.remove('hidden');
@@ -21,7 +23,10 @@ function showDM(username) {
     document.getElementById('dm-container').classList.remove('hidden');
     document.getElementById('user-list-container').classList.add('hidden');
     document.getElementById('messages').innerHTML = '';
+    loadMessages(username);
     document.getElementById('message-input').focus();
+    clearNotifications(username);
+    updateOnlineUsers();
     console.log(`Switched to DM with ${username}`);
   } catch (error) {
     console.error('Error in showDM:', error);
@@ -35,6 +40,67 @@ function showUserList() {
   document.getElementById('user-list-container').classList.remove('hidden');
   document.getElementById('messages').innerHTML = '';
   console.log('Returned to user list');
+}
+
+function loadMessages(username) {
+  const chatKey = getChatKey(myUsername, username);
+  const messages = messageHistory[chatKey] || [];
+  messages.forEach(({ from, message, timestamp }) => {
+    const msg = document.createElement('div');
+    msg.className = `message ${from === myUsername ? 'sent' : 'received'}`;
+    msg.textContent = `${message} (${new Date(timestamp).toLocaleTimeString()})`;
+    document.getElementById('messages').appendChild(msg);
+  });
+  document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+}
+
+function saveMessage(to, from, message, timestamp) {
+  const chatKey = getChatKey(myUsername, to);
+  if (!messageHistory[chatKey]) {
+    messageHistory[chatKey] = [];
+  }
+  messageHistory[chatKey].push({ from, message, timestamp });
+  localStorage.setItem('chatHistory', JSON.stringify(messageHistory));
+}
+
+function getChatKey(user1, user2) {
+  return [user1, user2].sort().join(':');
+}
+
+function addNotification(from) {
+  notifications[from] = (notifications[from] || 0) + 1;
+  updateOnlineUsers();
+}
+
+function clearNotifications(from) {
+  delete notifications[from];
+  updateOnlineUsers();
+}
+
+function updateOnlineUsers(users) {
+  const list = document.getElementById('online-list');
+  list.innerHTML = '';
+  users.forEach(user => {
+    if (user !== myUsername) {
+      const item = document.createElement('li');
+      item.className = 'online-user';
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = user;
+      const chatBtn = document.createElement('button');
+      chatBtn.textContent = 'Chat';
+      chatBtn.className = 'chat-btn';
+      chatBtn.onclick = () => showDM(user);
+      item.appendChild(nameSpan);
+      if (notifications[user]) {
+        const badge = document.createElement('span');
+        badge.className = 'notification-badge';
+        badge.textContent = notifications[user];
+        item.appendChild(badge);
+      }
+      item.appendChild(chatBtn);
+      list.appendChild(item);
+    }
+  });
 }
 
 socket.on('connect', () => {
@@ -53,34 +119,21 @@ socket.on('yourUsername', (username) => {
 });
 
 socket.on('onlineUsers', (users) => {
-  const list = document.getElementById('online-list');
-  list.innerHTML = '';
-  users.forEach(user => {
-    if (user !== myUsername) {
-      const item = document.createElement('li');
-      item.className = 'online-user';
-      const nameSpan = document.createElement('span');
-      nameSpan.textContent = user;
-      const chatBtn = document.createElement('button');
-      chatBtn.textContent = 'Chat';
-      chatBtn.className = 'chat-btn';
-      chatBtn.onclick = () => showDM(user);
-      item.appendChild(nameSpan);
-      item.appendChild(chatBtn);
-      list.appendChild(item);
-    }
-  });
+  updateOnlineUsers(users);
 });
 
 socket.on('receiveMessage', ({ from, message, timestamp }) => {
+  saveMessage(from, from, message, timestamp);
   if (from === currentChat) {
     const msg = document.createElement('div');
     msg.className = 'message received';
     msg.textContent = `${message} (${new Date(timestamp).toLocaleTimeString()})`;
     document.getElementById('messages').appendChild(msg);
     document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
-    playNotificationSound();
+  } else {
+    addNotification(from);
   }
+  playNotificationSound();
 });
 
 socket.on('typing', ({ from }) => {
@@ -113,6 +166,7 @@ document.getElementById('send-btn').onclick = () => {
   msg.textContent = `${message} (${new Date().toLocaleTimeString()})`;
   document.getElementById('messages').appendChild(msg);
   document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+  saveMessage(currentChat, myUsername, message, Date.now());
   document.getElementById('message-input').value = '';
 };
 
