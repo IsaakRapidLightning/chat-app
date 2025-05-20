@@ -85,3 +85,35 @@ h1, h2 {
   color: #007bff;
   font-weight: bold;
 }
+/* Additional custom styles for fine-tuning Tailwind */
+.chat-box::-webkit-scrollbar {
+  width: 8px;
+}
+.chat-box::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.chat-box::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+.chat-box::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.message {
+  padding: 8px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.sent {
+  color: #3b82f6;
+  font-weight: 600;
+}
+.online-user {
+  background: #e5e7eb;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.online-user:hover {
+  background: #d1d5db;
+}
