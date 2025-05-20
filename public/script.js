@@ -10,20 +10,31 @@ function showPrompt() {
 function showChat() {
   document.getElementById('username-prompt').classList.add('hidden');
   document.getElementById('chat-container').classList.remove('hidden');
+  document.getElementById('user-list-container').classList.remove('hidden');
+  document.getElementById('dm-container').classList.add('hidden');
 }
 
 function showDM(username) {
-  currentChat = username;
-  document.getElementById('dm-title').textContent = `Chatting with: ${username}`;
-  document.getElementById('dm-container').classList.remove('hidden');
-  document.getElementById('online-list').parentElement.classList.add('hidden');
-  document.getElementById('messages').innerHTML = '';
+  try {
+    currentChat = username;
+    document.getElementById('dm-title').textContent = `Chatting with: ${username}`;
+    document.getElementById('dm-container').classList.remove('hidden');
+    document.getElementById('user-list-container').classList.add('hidden');
+    document.getElementById('messages').innerHTML = '';
+    document.getElementById('message-input').focus();
+    console.log(`Switched to DM with ${username}`);
+  } catch (error) {
+    console.error('Error in showDM:', error);
+    alert('Failed to open chat. Please try again.');
+  }
 }
 
 function showUserList() {
   currentChat = null;
   document.getElementById('dm-container').classList.add('hidden');
-  document.getElementById('online-list').parentElement.classList.remove('hidden');
+  document.getElementById('user-list-container').classList.remove('hidden');
+  document.getElementById('messages').innerHTML = '';
+  console.log('Returned to user list');
 }
 
 socket.on('connect', () => {
