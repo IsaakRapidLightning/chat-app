@@ -2,39 +2,49 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-const path = require('path');
+const sanitizeHtml = require('sanitize-html');
 
 app.use(express.static('public'));
 
-const users = {}; // socket.id -> friendCode
-const friendCodeMap = {}; // friendCode -> socket.id
-
-function generateFriendCode() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
+const users = {}; // socket.id -> username
+const usernameMap = {}; // username -> socket.id
 
 io.on('connection', (socket) => {
-  const friendCode = generateFriendCode();
-  users[socket.id] = friendCode;
-  friendCodeMap[friendCode] = socket.id;
+  socket.on('join', (username) => {
+    username = sanitizeHtml(username, { allowedTags: [], allowedAttributes: {} });
+    if (usernameMap[username]) {
+      socket.emit('usernameTaken');
+      return;
+    }
+    users[socket.id] = username;
+    usernameMap[username] = socket.id;
+    socket.emit('yourUsername', username);
+    io.emit('onlineUsers', Object.values(users));
+  });
 
-  socket.emit('yourCode', friendCode);
-  io.emit('onlineUsers', Object.values(users));
-
-  socket.on('sendMessage', ({ toCode, message }) => {
-    const targetSocketId = friendCodeMap[toCode];
+  socket.on('sendMessage', ({ to, message, timestamp }) => {
+    message = sanitizeHtml(message, { allowedTags: [], allowedAttributes: {} });
+    const targetSocketId = usernameMap[to];
     if (targetSocketId) {
       io.to(targetSocketId).emit('receiveMessage', {
         from: users[socket.id],
         message,
+        timestamp
       });
     }
   });
 
+  socket.on('typing', ({ to }) => {
+    const targetSocketId = usernameMap[to];
+    if (targetSocketId) {
+      io.to(targetSocketId).emit('typing', { from: users[socket.id] });
+    }
+  });
+
   socket.on('disconnect', () => {
-    const code = users[socket.id];
+    const username = users[socket.id];
     delete users[socket.id];
-    delete friendCodeMap[code];
+    delete usernameMap[username];
     io.emit('onlineUsers', Object.values(users));
   });
 });

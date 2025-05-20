@@ -117,3 +117,50 @@ h1, h2 {
 .online-user:hover {
   background: #d1d5db;
 }
+.chat-box::-webkit-scrollbar {
+  width: 8px;
+}
+.chat-box::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.chat-box::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+.chat-box::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.message {
+  padding: 8px 12px;
+  margin: 4px 0;
+  border-radius: 8px;
+  max-width: 80%;
+}
+.sent {
+  background: #3b82f6;
+  color: white;
+  margin-left: auto;
+}
+.received {
+  background: #e5e7eb;
+  color: #1f2937;
+  margin-right: auto;
+}
+.online-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #e5e7eb;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+.chat-btn {
+  padding: 4px 8px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+.chat-btn:hover {
+  background: #2563eb;
+}

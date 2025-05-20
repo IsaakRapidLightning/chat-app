@@ -2,12 +2,11 @@
   "dependencies": {
     "express": "^5.1.0",
     "socket.io": "^4.8.1",
-    "sanitize-html": "^2.13.0",
-    "express-rate-limit": "^7.4.0"
+    "sanitize-html": "^2.13.0"
   },
   "name": "chat-app",
   "version": "1.0.0",
-  "description": "A simple friend code-based chat application",
+  "description": "A username-based private chat application",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
